@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 public class UIArtifact : Singleton<UIArtifact>
 {
@@ -48,11 +49,13 @@ public class UIArtifact : Singleton<UIArtifact>
 
     protected virtual void OnEnable()
     {
+        UIArtifactMenus.OnArtifactOpened += TrySelectPlayerTileOnOpen;
     }
 
     protected virtual void OnDisable()
     {
         ClearQueues();
+        UIArtifactMenus.OnArtifactOpened -= TrySelectPlayerTileOnOpen;
     }
 
     protected virtual void Start()
@@ -107,6 +110,8 @@ public class UIArtifact : Singleton<UIArtifact>
         // Controller check if nothing is selected, then select the tile 1 or left arrow or right arrow
         if (!IsButtonValidForSelection(EventSystem.current.currentSelectedGameObject))
         {
+            if(TrySelectPlayerTile()) return;
+
             foreach (GameObject g in fallbackButtonsToSelect)
             {
                 if (IsButtonValidForSelection(g))
@@ -118,11 +123,35 @@ public class UIArtifact : Singleton<UIArtifact>
         }
     }
 
+    private void TrySelectPlayerTileOnOpen(object sender, EventArgs e)
+    {
+        TrySelectPlayerTile();
+    }
+
+    private bool TrySelectPlayerTile()
+    {
+        STile tile = Player.GetInstance().GetSTileUnderneath();
+        if(tile != null)
+        {
+            ArtifactTileButton b = GetButton(tile.islandId);
+            GameObject g = b.gameObject;
+            print(g);
+            if (IsButtonValidForSelection(g))
+            {
+                EventSystem.current.SetSelectedGameObject(g);
+                return true;
+            }
+        }
+        print("ohhhh noooo");
+        return false;
+    }
+
     private bool IsButtonValidForSelection(GameObject g)
     {
         // If selected object is null or deactivated
         if (g == null || !g.activeInHierarchy)
         {
+            print("null or inactive");
             return false;
         }
 
@@ -130,6 +159,7 @@ public class UIArtifact : Singleton<UIArtifact>
         Button b = g.GetComponent<Button>();
         if (b != null && !b.enabled)
         {
+            print("button disabled");
             return false;
         }
 
