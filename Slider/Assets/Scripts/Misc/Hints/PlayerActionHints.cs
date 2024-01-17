@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
@@ -102,16 +103,16 @@ public class HintData
     public string GetFormattedHintText()
     {
         string hintTextToDisplay = CheckConvertToControllerHintText(hintText);
-        string ret = ReplacePlaceholdersWithControlBindings(hintTextToDisplay);
-        return ret;
+        return hintTextToDisplay;
     }
 
     private string CheckConvertToControllerHintText(string message)
     {
+        //Controller prompts use sprites, keyboard promps use rebinds
         if (!controllerHintText.Equals("") && Player.GetInstance().GetCurrentControlScheme() == "Controller")
             return controllerHintText;
         else
-            return message;
+            return ReplacePlaceholdersWithControlBindings(message);
     }
 
     private string ReplacePlaceholdersWithControlBindings(string message)
@@ -132,8 +133,8 @@ public class HintData
                                             .ToUpper()
                                             .Replace("PRESS ", "")
                                             .Replace(" ARROW", "");
-
-            message = message.Replace(placeholder, controlBinding);
+            if(!placeholder.Contains("sprite"))
+                message = message.Replace(placeholder, controlBinding);
         }
 
         message = message.Replace("W/A/S/D", "WASD");
