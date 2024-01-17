@@ -44,8 +44,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: smallA
-    m_HashCode: 177164094
+    m_Name: smallAction1
+    m_HashCode: 1971733872
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 1
@@ -62,14 +62,14 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 3
     m_Scale: 1
-    m_Name: bigA
-    m_HashCode: 3567501
+    m_Name: bigAction1
+    m_HashCode: 193730243
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 4
     m_Scale: 1
-    m_Name: Controller_Button_Icons_4
-    m_HashCode: 1101235449
+    m_Name: bigAction2
+    m_HashCode: 193730240
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 5

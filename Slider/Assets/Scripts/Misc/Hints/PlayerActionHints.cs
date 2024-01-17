@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -98,7 +99,7 @@ public class HintData
     public string hintText; //the text of the hint
     public string controllerHintText;
     public List<Control> controlBinds; //list of control binds to replace in order
-
+    public ListOfTMPSpriteAssets listOfTMPSpriteAssets; //I hate this
 
     public string GetFormattedHintText()
     {
@@ -110,9 +111,30 @@ public class HintData
     {
         //Controller prompts use sprites, keyboard promps use rebinds
         if (!controllerHintText.Equals("") && Player.GetInstance().GetCurrentControlScheme() == "Controller")
-            return controllerHintText;
+            return ReplacePlaceholdersWithControllerIcons(controllerHintText);
         else
             return ReplacePlaceholdersWithControlBindings(message);
+    }
+
+    private string ReplacePlaceholdersWithControllerIcons(string message)
+    {
+        int count = 0;
+        TMP_SpriteAsset asset = listOfTMPSpriteAssets.GetSpriteAsset(Controls.gamePadType);
+        while(message.Contains("QQQ") && count < 10)
+        {
+            message = message.Replace("QQQ", $"\"{asset.name}\"");
+            Debug.Log(asset.name);
+            count++;
+        }
+        return message;
+    }
+
+    private string FormatControlBinding(Control control)
+    {
+        return Controls.BindingDisplayString(control)
+                                            .ToUpper()
+                                            .Replace("PRESS ", "")
+                                            .Replace(" ARROW", "");
     }
 
     private string ReplacePlaceholdersWithControlBindings(string message)
@@ -129,12 +151,8 @@ public class HintData
             int endOfPlaceholder = message.IndexOf(">");
             string placeholder = message.Substring(startOfPlaceholder, endOfPlaceholder - startOfPlaceholder + 1);
 
-            string controlBinding = Controls.BindingDisplayString(bindingsToPlace.Dequeue())
-                                            .ToUpper()
-                                            .Replace("PRESS ", "")
-                                            .Replace(" ARROW", "");
-            if(!placeholder.Contains("sprite"))
-                message = message.Replace(placeholder, controlBinding);
+            string controlBinding = FormatControlBinding(bindingsToPlace.Dequeue());
+            message = message.Replace(placeholder, controlBinding);
         }
 
         message = message.Replace("W/A/S/D", "WASD");

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.XR;
 
 /// <summary>
 /// This provides a way to get control bindings without having to load the bindings in multiple places, which is inefficient
@@ -30,6 +29,14 @@ public class Controls : Singleton<Controls>
     public static Action OnControlSchemeChanged;
     public static string CurrentControlScheme { get; set; } = CONTROL_SCHEME_KEYBOARD_MOUSE;
 
+    public enum GamePadType{
+        NONE,
+        XBOX,
+        PLAYSTATION,
+        OTHER,
+    }
+
+    public static GamePadType gamePadType = GamePadType.NONE;
 
     public const string CONTROL_SCHEME_KEYBOARD_MOUSE = "Keyboard Mouse";
 

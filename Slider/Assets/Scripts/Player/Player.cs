@@ -4,6 +4,8 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
+using UnityEngine.InputSystem.DualShock;
+using UnityEngine.InputSystem.XInput;
 
 public class Player : Singleton<Player>, ISavable, ISTileLocatable
 {
@@ -189,6 +191,26 @@ public class Player : Singleton<Player>, ISavable, ISTileLocatable
     {
         string newControlScheme = GetCurrentControlScheme();
         //Debug.Log("Control Scheme changed to: " + newControlScheme);
+        var gamepad = Gamepad.current;
+        if(gamepad != null)
+        {
+            if(gamepad is DualShockGamepad || gamepad is DualSenseGamepadHID)
+            {
+                Controls.gamePadType = Controls.GamePadType.PLAYSTATION;
+            }
+            else if(gamepad is XInputController || gamepad is XInputControllerWindows)
+            {
+                Controls.gamePadType = Controls.GamePadType.XBOX;
+            }
+            else
+            {
+                Controls.gamePadType = Controls.GamePadType.OTHER;
+            }
+        }
+        else
+        {
+            Controls.gamePadType = Controls.GamePadType.NONE;
+        }
         OnControlSchemeChanged?.Invoke(newControlScheme);
         Controls.CurrentControlScheme = newControlScheme;
     }
