@@ -25,20 +25,16 @@ public class Sign : Box
             recievedShapes.Add(paths[d], null);
         }
     }
-    private void OnEnable()
+    protected void OnEnable()
     {
         SGridAnimator.OnSTileMoveStart += UpdateShapesOnTileMove;
-        SGridAnimator.OnSTileMoveEnd += OnSTileMoveEnd;
-        SGridAnimator.OnSTileMoveStart += DeactivatePathsOnSTileMove;
-        SGrid.OnSTileEnabled += STileEnabled;
+        SubscribeEvents();
     }
 
     private void OnDisable()
     {
         SGridAnimator.OnSTileMoveStart -= UpdateShapesOnTileMove;
-        SGridAnimator.OnSTileMoveEnd -= OnSTileMoveEnd;
-        SGridAnimator.OnSTileMoveStart -= DeactivatePathsOnSTileMove;
-        SGrid.OnSTileEnabled -= STileEnabled;
+        UnSubscribeEvents();
     }
 
     private void UpdateShapesOnTileMove(object sender, SGridAnimator.OnTileMoveArgs e)

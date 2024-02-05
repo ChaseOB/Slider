@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,20 +38,23 @@ public class Hut : Box
 
     private void OnSTileEnabled(object sender, SGrid.OnSTileEnabledArgs e)
     {
-        foreach (Direction d in paths.Keys)
-        {
-            paths[d].ChangePair();
-        }
+        UpdatePaths();
         currParents = new List<Box>();
         CreateShape();
     }
+
     protected override void OnSTileMoveEnd(object sender, SGridAnimator.OnTileMoveArgs e)
     {
-        foreach (Direction d in paths.Keys)
-        {
-            paths[d].ChangePair();
-        }
+        UpdatePaths();
         currParents = new List<Box>();
+        CreateShape();
+    }
+    
+    protected override void AfterScrollRearrage(object sender, EventArgs e)
+    {
+        RemovePaths();
+        UpdatePaths();
+        currParents = new();
         CreateShape();
     }
 

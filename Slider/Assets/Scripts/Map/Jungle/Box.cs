@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -33,19 +34,52 @@ public class Box : MonoBehaviour
 
     private void OnEnable()
     {
+        SubscribeEvents();        
+    }
+
+    protected void SubscribeEvents()
+    {
         SGridAnimator.OnSTileMoveStart += DeactivatePathsOnSTileMove;
         SGridAnimator.OnSTileMoveEnd += OnSTileMoveEnd;
         SGrid.OnSTileEnabled += STileEnabled;
+        ArtifactTabManager.AfterScrollRearrage += AfterScrollRearrage;   
     }
 
     private void OnDisable()
     {
+        UnSubscribeEvents();
+    }
+
+    protected void UnSubscribeEvents()
+    {
         SGridAnimator.OnSTileMoveStart -= DeactivatePathsOnSTileMove;
         SGridAnimator.OnSTileMoveEnd -= OnSTileMoveEnd;
         SGrid.OnSTileEnabled -= STileEnabled;
+        ArtifactTabManager.AfterScrollRearrage -= AfterScrollRearrage;
     }
 
     protected void DeactivatePathsOnSTileMove(object sender, SGridAnimator.OnTileMoveArgs e)
+    {
+        RemovePaths();
+    }
+
+    protected virtual void OnSTileMoveEnd(object sender, SGridAnimator.OnTileMoveArgs e)
+    {
+        UpdatePaths();
+    }
+
+    protected void STileEnabled(object sender, SGrid.OnSTileEnabledArgs e)
+    {
+        UpdatePaths();
+    }
+
+    protected virtual void AfterScrollRearrage(object sender, EventArgs e)
+    {
+        RemovePaths();
+        UpdatePaths();
+    }
+
+    protected void RemovePaths()
     {
         foreach (Direction d in paths.Keys)
         {
@@ -54,15 +88,7 @@ public class Box : MonoBehaviour
         }
     }
 
-    protected virtual void OnSTileMoveEnd(object sender, SGridAnimator.OnTileMoveArgs e)
-    {
-        foreach (Direction d in paths.Keys)
-        {
-            paths[d].ChangePair();
-        }
-    }
-
-    protected void STileEnabled(object sender, SGrid.OnSTileEnabledArgs e)
+    protected void UpdatePaths()
     {
         foreach (Direction d in paths.Keys)
         {
