@@ -60,8 +60,5 @@ public class DesertSafe : MonoBehaviour
         mirageSpriteRenderer.sprite = meltedMirageSprite;
 
         VarManager.instance.SetBoolOn("desertSafeMelted");
-
-        dinoLasersManager.RemoveAllLasersPermanently();
-        MirageSTileManager.GetInstance().DisableMirage();
     }
 }
