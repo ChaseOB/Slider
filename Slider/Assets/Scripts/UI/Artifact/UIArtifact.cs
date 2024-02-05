@@ -61,7 +61,6 @@ public class UIArtifact : Singleton<UIArtifact>
     protected virtual void Start()
     {
         //Only unsubscribed in DesertArtifact
-        SGridAnimator.OnSTileMoveEnd += QueueCheckAfterMove;
         SGridAnimator.OnSTileMoveEnd += UpdatePushedDowns;
         OnButtonInteract += UpdatePushedDowns;
     }
@@ -543,18 +542,12 @@ public class UIArtifact : Singleton<UIArtifact>
         moveQueue.Enqueue(move);
     }
 
-    //DON'T CALL DIRECTLY (call ProcessQueue instead)
-    protected virtual void QueueCheckAfterMove(object sender, SGridAnimator.OnTileMoveArgs e)
+    public void SetMoveInactive(SMove lastMove)
     {
-        if (e != null)
+        if (activeMoves.Contains(lastMove))
         {
-            if (activeMoves.Contains(e.smove))
-            {
-                activeMoves.Remove(e.smove);
-            }
+            activeMoves.Remove(lastMove);
         }
-
-        ProcessQueue();
     }
 
     public virtual void ProcessQueue()
@@ -870,7 +863,17 @@ public class UIArtifact : Singleton<UIArtifact>
     {
         foreach (ArtifactTileButton b in buttons)
         {
-            b.Flicker(1);
+            if (b.gameObject.activeSelf)
+                b.Flicker(1, repeat:false);
+        }
+    }
+
+    public void FlickerActiveOnce()
+    {
+        foreach (ArtifactTileButton b in buttons)
+        {
+            if (b.TileIsActive)
+                b.Flicker(1, repeat:false);
         }
     }
 

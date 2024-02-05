@@ -5,6 +5,7 @@ using UnityEngine;
 public class JackalJump : MonoBehaviour
 {
     private const string JUMP_SAVE_STRING = "desertJackalDidJump";
+    private const string TALKED_TO_JACKAL_SAVE_STRING = "DesertTalkedToJackal";
     // desertJackalOasis
     // desertJackalSeenBone
     
@@ -52,7 +53,7 @@ public class JackalJump : MonoBehaviour
     
     private void OnSTileMove(object sender, SGridAnimator.OnTileMoveArgs e)
     {
-        if (SaveSystem.Current.GetBool(JUMP_SAVE_STRING))
+        if (SaveSystem.Current.GetBool(JUMP_SAVE_STRING) || !SaveSystem.Current.GetBool(TALKED_TO_JACKAL_SAVE_STRING))
             return;
         if (e.stile.islandId != 4)
             return;
@@ -95,6 +96,8 @@ public class JackalJump : MonoBehaviour
         jackalAnimator.SetBool("isSpinning", true);
         jackalAnimator.SetBool("isFrozen", false);
 
+        AudioManager.Play("Jackal Jump", jackalGameObject.transform);
+
         Vector3 startPos = jackalGameObject.transform.position;
         float t = 0;
         while (t < jumpDuration)
@@ -130,9 +133,6 @@ public class JackalJump : MonoBehaviour
         jackalAnimator.SetBool("isSpinning", false);
         jackalCollider.enabled = true;
         isJumping = false;
-
-        yield return new WaitForSeconds (1.5f);
-
         didJump = true;
     }
 
