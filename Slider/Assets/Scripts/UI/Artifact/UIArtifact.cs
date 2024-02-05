@@ -101,6 +101,7 @@ public class UIArtifact : Singleton<UIArtifact>
 
     private void HandleControllerCheck()
     {
+        if(Controls.CurrentControlScheme != Controls.CONTROL_SCHEME_CONTROLLER) return;
         if (!UIArtifactMenus.IsArtifactOpen())
         {
             return;
@@ -124,7 +125,7 @@ public class UIArtifact : Singleton<UIArtifact>
 
     private void TrySelectPlayerTileOnOpen(object sender, EventArgs e)
     {
-        TrySelectPlayerTile();
+       // TrySelectPlayerTile();
     }
 
     private bool TrySelectPlayerTile()

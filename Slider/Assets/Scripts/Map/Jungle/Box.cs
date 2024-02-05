@@ -75,7 +75,7 @@ public class Box : MonoBehaviour
 
     protected virtual void AfterScrollRearrage(object sender, EventArgs e)
     {
-        RemovePaths();
+      //  RemovePaths();
         UpdatePaths();
     }
 
