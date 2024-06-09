@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,10 +26,21 @@ public class UIEffects : Singleton<UIEffects>
     // Holds the last flashing/black fade coroutine called so we can end it when starting a new one
     private static Coroutine previousCoroutine;
 
+    private Texture2D screenshot;
+    private RenderTexture pastFrame;
+
+
+    public enum ScreenshotEffectType
+    {
+        PORTAL,
+        MIRAGE
+    };
+
     private void Awake()
     {
         //_instance = this;
         InitializeSingleton();
+        pastFrame = new RenderTexture (Screen.width, Screen.height, 16);
     }
 
     private void OnEnable()
@@ -47,6 +59,14 @@ public class UIEffects : Singleton<UIEffects>
         {
             _instance.blackPanel.SetActive(false);
         }
+    }
+
+    public void OnRenderImage(RenderTexture src, RenderTexture dst){ 
+        if(pastFrame.width != Screen.width || pastFrame.height != Screen.height)
+        {
+            pastFrame = new RenderTexture (Screen.width, Screen.height, 0);
+        }
+        Graphics.Blit(RenderTexture.active, pastFrame);
     }
 
     public static void FadeFromBlack(System.Action callback=null, float speed=1, float alpha = 1f)
@@ -74,9 +94,9 @@ public class UIEffects : Singleton<UIEffects>
         StartEffectCoroutine(_instance.FlashCoroutine(callbackMiddle, callbackEnd, speed));
     }
 
-    public static void FadeFromScreenshot(System.Action screenshotCallback = null, System.Action callbackEnd = null, float speed = 1)
+    public static void FadeFromScreenshot(ScreenshotEffectType type, System.Action screenshotCallback = null, System.Action callbackEnd = null, float speed = 1)
     {
-        StartEffectCoroutine(_instance.ScreenshotCoroutine(screenshotCallback, callbackEnd, speed), false);
+        StartEffectCoroutine(_instance.ScreenshotCoroutine(type, screenshotCallback, callbackEnd, speed), false);
     }
 
     public static void ClearScreen()
@@ -152,10 +172,25 @@ public class UIEffects : Singleton<UIEffects>
         callbackEnd?.Invoke();
     }
 
-    private IEnumerator ScreenshotCoroutine(System.Action screenshotCallback = null, System.Action callbackEnd = null, float speed = 1)
+
+    public static void TakeScreenshot()
+    {
+        _instance.screenshot = ScreenCapture.CaptureScreenshotAsTexture();
+    }
+
+    public static void ClearScreenshot()
+    {
+        _instance.screenshot = null;
+    }
+
+    private IEnumerator ScreenshotCoroutine(ScreenshotEffectType type, System.Action screenshotCallback = null, System.Action callbackEnd = null, float speed = 1)
     {
         yield return new WaitForEndOfFrame();
-        var screenshot = ScreenCapture.CaptureScreenshotAsTexture();
+        if(screenshot == null)
+            TakeScreenshot();
+        // Texture2D tex = new Texture2D(Screen.width, Screen.height, TextureFormat.ARARGB32, false);
+        // Graphics.CopyTexture(pastFrame, tex);
+        // Sprite sprite = Sprite.Create(tex, new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
         Sprite sprite = Sprite.Create(screenshot, new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
         screenshotImage.sprite = sprite;
         screenshotPanel.SetActive(true);
@@ -169,12 +204,21 @@ public class UIEffects : Singleton<UIEffects>
         {
             float alpha = Mathf.Lerp(0.5f, 0, t / fadeDuration);
             screenshotCanvasGroup.alpha = alpha;
-            screenshotPanel.transform.localScale = (2 - (alpha * 2)) * Vector3.one;
-            screenshotPanel.transform.localRotation *= Quaternion.Euler(new Vector3(0, 0, t * 2));
+            switch (type)
+            {
+                case ScreenshotEffectType.PORTAL:
+                    screenshotPanel.transform.localScale = (2 - (alpha * 2)) * Vector3.one;
+                    screenshotPanel.transform.localRotation *= Quaternion.Euler(new Vector3(0, 0, t * 2));
+                    break;
+                case ScreenshotEffectType.MIRAGE:
+                    screenshotPanel.transform.localScale = Mathf.Lerp(1, 1.1f, (t/ fadeDuration)) * Vector3.one;
+                    break;
+            }
             yield return null;
             t += (Time.deltaTime * speed);
         }
         screenshotPanel.SetActive(false);
+        screenshot = null;
         callbackEnd?.Invoke();
     }
 

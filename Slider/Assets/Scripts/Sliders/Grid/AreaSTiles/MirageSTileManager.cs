@@ -228,11 +228,14 @@ public class MirageSTileManager : Singleton<MirageSTileManager>, ISavable
     /// <param name="islandId">0 means disable all mirages</param>
     public void DisableMirageTile(int islandId = -1)
     {
-        //Insert disable effect
-        RemoveMirageData(islandId);
-        if (islandId == 0 || islandId > 7) return;
-        if (islandId < 0) foreach (GameObject o in mirageSTiles) o.SetActive(false);
-        else mirageSTiles[islandId - 1].gameObject.SetActive(false);
+        CoroutineUtils.ExecuteAfterEndOfFrame(() => {
+            UIEffects.TakeScreenshot();
+            RemoveMirageData(islandId);
+            if (islandId == 0 || islandId > 7) return;
+            if (islandId < 0) foreach (GameObject o in mirageSTiles) o.SetActive(false);
+            else mirageSTiles[islandId - 1].gameObject.SetActive(false);
+            }, 
+        this);
     }
 
     private void RemoveMirageData(int islandId)
@@ -274,16 +277,19 @@ public class MirageSTileManager : Singleton<MirageSTileManager>, ISavable
         bool playerOnMirage = IsPlayerOnMirage(out mirageIsland);
 
         if (playerOnMirage)
-        {
+        {  
             STile realSTile = DesertGrid.Current.GetStile(mirageIsland);
             Vector3 relativePos = Player._instance.transform.position - mirageSTiles[mirageIsland - 1].transform.position;
-            realSTile.SetBorderColliders(false);
-            Player.SetParent(realSTile.transform);
-            Player.SetPosition(realSTile.transform.position + relativePos);
-
-            AudioManager.Play("Hurt");
-            UIEffects.FadeFromBlack(null, 1.5f);
+            realSTile.SetBorderColliders(false);         
+            UIEffects.FadeFromScreenshot(type:UIEffects.ScreenshotEffectType.MIRAGE, screenshotCallback: () => MovePlayer(realSTile, relativePos), speed:0.7f);
         }
+    }
+
+    private void MovePlayer(STile realSTile, Vector3 relativePos)
+    {
+        Player.SetParent(realSTile.transform);
+        Player.SetPosition(realSTile.transform.position + relativePos);
+        AudioManager.Play("Hurt");
     }
 
     /// <summary>

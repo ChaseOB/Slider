@@ -62,7 +62,7 @@ public class Portal : MonoBehaviour
 
     private void InitTeleport()
     {
-        UIEffects.FadeFromScreenshot(Teleport);
+        UIEffects.FadeFromScreenshot(type: UIEffects.ScreenshotEffectType.PORTAL, Teleport);
     }
 
     private void Teleport()
