@@ -79,7 +79,10 @@ public class Player : Singleton<Player>, ISavable, ISTileLocatable
 
     private void Start() 
     {
-        AddTracker();
+        if(trackerEnabled)
+        {
+            AddTracker();
+        }   
     }
 
     private void OnDisable() 
@@ -471,6 +474,7 @@ public class Player : Singleton<Player>, ISavable, ISTileLocatable
 
     public void SetTrackerEnabled(bool value)
     {
+        print("tracker enabled " + value);
         trackerEnabled = value;
         if(trackerEnabled)
         {
@@ -500,30 +504,31 @@ public class Player : Singleton<Player>, ISavable, ISTileLocatable
 
     public void AddTracker()
     {
+        print("adding tracker from player"); 
         if (SettingsManager.Setting<bool>(Settings.MiniPlayerIcon).CurrentValue)
-            {
-                UITrackerManager.AddNewTracker(
-                    gameObject,
-                    UITrackerManager.DefaultSprites.playerBlackCircle,
-                    UITrackerManager.DefaultSprites.playerBlackCircleEmpty,
-                    UITrackerManager.DefaultSprites.playerWhiteCircle,
-                    UITrackerManager.DefaultSprites.playerWhiteCircleEmpty,
-                    blinkTime: 3f,
-                    timeUntilBlinkRepeat: 10f
-                );
-            }
-            else
-            {
-                UITrackerManager.AddNewTracker(
-                    gameObject,
-                    UITrackerManager.DefaultSprites.playerFullBlackCircle,
-                    UITrackerManager.DefaultSprites.playerFullBlackCircleEmpty,
-                    UITrackerManager.DefaultSprites.playerFullWhiteCircle,
-                    UITrackerManager.DefaultSprites.playerFullWhiteCircleEmpty,
-                    blinkTime: 3f,
-                    timeUntilBlinkRepeat: 10f
-                );
-            }
+        {
+            UITrackerManager.AddNewTracker(
+                gameObject,
+                UITrackerManager.DefaultSprites.playerBlackCircle,
+                UITrackerManager.DefaultSprites.playerBlackCircleEmpty,
+                UITrackerManager.DefaultSprites.playerWhiteCircle,
+                UITrackerManager.DefaultSprites.playerWhiteCircleEmpty,
+                blinkTime: 3f,
+                timeUntilBlinkRepeat: 10f
+            );
+        }
+        else
+        {
+            UITrackerManager.AddNewTracker(
+                gameObject,
+                UITrackerManager.DefaultSprites.playerFullBlackCircle,
+                UITrackerManager.DefaultSprites.playerFullBlackCircleEmpty,
+                UITrackerManager.DefaultSprites.playerFullWhiteCircle,
+                UITrackerManager.DefaultSprites.playerFullWhiteCircleEmpty,
+                blinkTime: 3f,
+                timeUntilBlinkRepeat: 10f
+            );
+        }
     }
 
     // This is a dangerous operation! You should probably only use it when the grid is locked.

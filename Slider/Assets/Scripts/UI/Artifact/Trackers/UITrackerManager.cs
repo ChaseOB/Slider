@@ -238,6 +238,7 @@ public class UITrackerManager : MonoBehaviour
         float blinkTime=-1,
         float timeUntilBlinkRepeat=-1
     ) {
+        print("Added new tracker from manager");
         if (target == null)
         {
             Debug.LogWarning("Tried adding a tracker to null!");
@@ -269,6 +270,8 @@ public class UITrackerManager : MonoBehaviour
             uiTrackerBuffer.Add(new UITrackerData(target, sprite, blinkSprite, offMapSprite, offMapBlinkSprite, blinkTime, timeUntilBlinkRepeat));
             return;
         }
+
+        print("actually adding tracker now");
 
         GameObject tracker = GameObject.Instantiate(_instance.uiTrackerPrefab, _instance.transform);
         UITracker uiTracker = tracker.GetComponent<UITracker>();
