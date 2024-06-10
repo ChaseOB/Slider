@@ -26,7 +26,6 @@ public class UIEffects : Singleton<UIEffects>
     // Holds the last flashing/black fade coroutine called so we can end it when starting a new one
     private static Coroutine previousCoroutine;
 
-    private Texture2D screenshot;
     private RenderTexture pastFrame;
 
 
@@ -172,25 +171,10 @@ public class UIEffects : Singleton<UIEffects>
         callbackEnd?.Invoke();
     }
 
-
-    public static void TakeScreenshot()
-    {
-        _instance.screenshot = ScreenCapture.CaptureScreenshotAsTexture();
-    }
-
-    public static void ClearScreenshot()
-    {
-        _instance.screenshot = null;
-    }
-
     private IEnumerator ScreenshotCoroutine(ScreenshotEffectType type, System.Action screenshotCallback = null, System.Action callbackEnd = null, float speed = 1)
     {
         yield return new WaitForEndOfFrame();
-        if(screenshot == null)
-            TakeScreenshot();
-        // Texture2D tex = new Texture2D(Screen.width, Screen.height, TextureFormat.ARARGB32, false);
-        // Graphics.CopyTexture(pastFrame, tex);
-        // Sprite sprite = Sprite.Create(tex, new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
+        var screenshot =  ScreenCapture.CaptureScreenshotAsTexture();
         Sprite sprite = Sprite.Create(screenshot, new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
         screenshotImage.sprite = sprite;
         screenshotPanel.SetActive(true);

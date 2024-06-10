@@ -228,14 +228,10 @@ public class MirageSTileManager : Singleton<MirageSTileManager>, ISavable
     /// <param name="islandId">0 means disable all mirages</param>
     public void DisableMirageTile(int islandId = -1)
     {
-        CoroutineUtils.ExecuteAfterEndOfFrame(() => {
-            UIEffects.TakeScreenshot();
-            RemoveMirageData(islandId);
-            if (islandId == 0 || islandId > 7) return;
-            if (islandId < 0) foreach (GameObject o in mirageSTiles) o.SetActive(false);
-            else mirageSTiles[islandId - 1].gameObject.SetActive(false);
-            }, 
-        this);
+        RemoveMirageData(islandId);
+        if (islandId == 0 || islandId > 7) return;
+        if (islandId < 0) foreach (GameObject o in mirageSTiles) o.SetActive(false);
+        else mirageSTiles[islandId - 1].gameObject.SetActive(false);
     }
 
     private void RemoveMirageData(int islandId)
