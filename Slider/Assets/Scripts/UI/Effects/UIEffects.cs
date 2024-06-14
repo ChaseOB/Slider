@@ -21,6 +21,8 @@ public class UIEffects : Singleton<UIEffects>
 
     public UISpotlightEffect uISpotlightEffect;
 
+    public PixelizeFeature pixelizeFeature;
+
     //private static UIEffects _instance;
 
     // Holds the last flashing/black fade coroutine called so we can end it when starting a new one
@@ -96,6 +98,11 @@ public class UIEffects : Singleton<UIEffects>
     public static void FadeFromScreenshot(ScreenshotEffectType type, System.Action screenshotCallback = null, System.Action callbackEnd = null, float speed = 1)
     {
         StartEffectCoroutine(_instance.ScreenshotCoroutine(type, screenshotCallback, callbackEnd, speed), false);
+    }
+
+    public static void Pixelize(System.Action callbackMiddle=null, System.Action callbackEnd=null, float speed=1)
+    {
+        StartEffectCoroutine(_instance.PixelizeCoroutine(callbackMiddle, callbackEnd, speed));
     }
 
     public static void ClearScreen()
@@ -204,6 +211,40 @@ public class UIEffects : Singleton<UIEffects>
         screenshotPanel.SetActive(false);
         screenshot = null;
         callbackEnd?.Invoke();
+    }
+
+    private IEnumerator PixelizeCoroutine(System.Action callbackMiddle = null, System.Action callbackEnd = null, float speed = 1)
+    {   
+        int maxRes = 180;
+        int minRes = 10;
+
+        float t = 0; 
+        pixelizeFeature.SetActive(true);
+
+        while (t < flashDuration / 2)
+        {
+            pixelizeFeature.settings.screenHeight = (int)Mathf.Lerp(maxRes, minRes, t / (flashDuration / 2));
+
+            yield return null;
+            t += (Time.deltaTime * speed);
+        }
+
+        callbackMiddle?.Invoke();
+
+        while (t >= 0)
+        {
+            pixelizeFeature.settings.screenHeight = (int)Mathf.Lerp(maxRes, minRes, t / (flashDuration / 2));
+
+            yield return null;
+            t -= (Time.deltaTime * speed);
+        }
+        callbackEnd?.Invoke();
+        pixelizeFeature.SetActive(false);
+    }
+
+    private void TogglePixel()
+    {
+        pixelizeFeature.SetActive(!pixelizeFeature.isActive);
     }
 
     public static void StartSpotlight(Vector2 positionPixel, float radiusPixel, float duration=2, System.Action onStart=null, System.Action onFinish=null)
