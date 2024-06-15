@@ -56,9 +56,20 @@ public class ArtifactTBPluginMirage : ArtifactTBPlugin
         button.SetSpriteToIsland();
         stile.sliderCollider.isTrigger = true;
         buttonMirage.SetMirageEnabled(true);
+        SendLaserData();
+    }
 
+    private void SendLaserData()
+    {
+        DesertArtifact artifact = (DesertArtifact)UIArtifact.GetInstance();
+        (int, int) cords = (button.x - 1, button.y);
+        bool dinoButtLeft = (button.x > 0) &&  artifact.currGrid[cords] == 7;
+        if(dinoButtLeft)
+        {
+            print(cords + " tile " + artifact.currGrid[cords]);
+        }
         ArtifactTBPluginLaser laserPlugin = laserPlugins[mirageIslandId - 1];
-        myLaserPlugin.laserUIData.CopyDataFromMirageSource(laserPlugin.laserUIData);
+        myLaserPlugin.laserUIData.CopyDataFromMirageSource(laserPlugin.laserUIData, dinoButtLeft);
     }
 
     public void DisableMirageButton()

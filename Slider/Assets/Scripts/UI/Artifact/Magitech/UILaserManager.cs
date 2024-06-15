@@ -35,6 +35,7 @@ public class UILaserManager : MonoBehaviour
 
     public void AddSource(LaserUIData data)
     {
+        print("adding source " + data.islandId);
         if (sources == null)
             sources = new();
         sources.Add(data);
@@ -44,6 +45,7 @@ public class UILaserManager : MonoBehaviour
     public void RemoveSource(LaserUIData data)
     {
         if (sources == null) return;
+        print("removing source " + data.islandId);
         sources.Remove(data);
     }
 
@@ -281,12 +283,12 @@ public class LaserUIData
         }
     }
 
-    public void CopyDataFromMirageSource(LaserUIData original)
+    public void CopyDataFromMirageSource(LaserUIData original, bool dinoButtLeft)
     {
         islandId = original.islandId;
         centerObject = original.centerObject;
         sourceDir = original.sourceDir;
-        if (centerObject == LaserCenterObject.SOURCE)
+        if (dinoButtLeft && centerObject == LaserCenterObject.SOURCE)
         {
             uILaserManager.AddSource(this);
         }
