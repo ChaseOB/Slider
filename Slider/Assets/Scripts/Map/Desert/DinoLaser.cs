@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DinoLaser : MonoBehaviour
 {
-    [SerializeField] private MagiLaser laser;
+    [SerializeField] public MagiLaser laser;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
     public UILaserManager uILaserManager;

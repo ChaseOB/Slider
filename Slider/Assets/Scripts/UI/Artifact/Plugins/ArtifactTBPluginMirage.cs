@@ -13,6 +13,7 @@ public class ArtifactTBPluginMirage : ArtifactTBPlugin
     [SerializeField] private List<Sprite> mirageSprites;
     [SerializeField] private STile stile;
     [SerializeField] private ButtonMirage buttonMirage;
+    public MagiLaser mirageDinoLaser;
 
     private void OnEnable()
     {
@@ -44,32 +45,53 @@ public class ArtifactTBPluginMirage : ArtifactTBPlugin
 
         if (mirageIslandId < 8) 
         {
-            EnableMirageButton(mirageIslandId);
+            EnableMirageButton(mirageIslandId, false);
         }
     }
 
-    public void EnableMirageButton(int id)
+    public void EnableMirageButton(int id, bool fromLoad)
     {
+        //print("enabling mirage button " + id);
+        //print(DesertGrid.GetGridString()); //4 * (2-y) + x
         mirageIslandId = id;
         button.SetEmptySprite(mirageSprites[mirageIslandId - 1]);
         button.SetIslandSprite(mirageSprites[mirageIslandId - 1]);
         button.SetSpriteToIsland();
         stile.sliderCollider.isTrigger = true;
         buttonMirage.SetMirageEnabled(true);
-        SendLaserData();
+        SendLaserData(fromLoad);
     }
 
-    private void SendLaserData()
+    private void SendLaserData(bool fromLoad)
     {
+        //When is this a source?
+        //0. dino laser is on
+        //1. this is mirage tile 4
+        //2. the tile to the left is either the real tile 7 or mirage tile 7
+        //mirage 7 if currGrid is 7
+        //real 7 if gridString is 7 4 * (2-y) + x
+
         DesertArtifact artifact = (DesertArtifact)UIArtifact.GetInstance();
-        (int, int) cords = (button.x - 1, button.y);
-        bool dinoButtLeft = (button.x > 0) &&  artifact.currGrid[cords] == 7;
-        if(dinoButtLeft)
+
+        if(button.x > 0)
         {
-            print(cords + " tile " + artifact.currGrid[cords]);
+            int x = button.x - 1;
+            int y = button.y;
+            (int, int) cords = (x, y);
+            int tileLeft = UIArtifact.GetButton(x, y).islandId;
+            bool real7left = tileLeft == 7;
+            bool mirage7left = fromLoad ? 
+                MirageSTileManager.GetInstance().MirageTileAtLocation(7, x, y) :
+                artifact.currGrid[cords] == 7 && (tileLeft == 8 || tileLeft == 9);
+            bool dinoButtLeft = mirage7left || real7left;
+            if(dinoButtLeft)
+            {
+                print("dino butt left real " + real7left +  " mirage " + mirage7left );
+            }
+            ArtifactTBPluginLaser laserPlugin = laserPlugins[mirageIslandId - 1];
+            var laser = mirageIslandId == 4 ? mirageDinoLaser : null;
+            myLaserPlugin.GetLaserUIData().CopyDataFromMirageSource(laserPlugin.GetLaserUIData(), dinoButtLeft, laser);
         }
-        ArtifactTBPluginLaser laserPlugin = laserPlugins[mirageIslandId - 1];
-        myLaserPlugin.laserUIData.CopyDataFromMirageSource(laserPlugin.laserUIData, dinoButtLeft);
     }
 
     public void DisableMirageButton()
@@ -81,7 +103,7 @@ public class ArtifactTBPluginMirage : ArtifactTBPlugin
         mirageIslandId = 0;
         stile.sliderCollider.isTrigger = false;
         buttonMirage.SetMirageEnabled(false);
-        myLaserPlugin.laserUIData?.ClearDataOnMirageDisable();
+        myLaserPlugin.GetLaserUIData()?.ClearDataOnMirageDisable();
 
         DesertArtifact.MirageDisappeared?.Invoke(this, new System.EventArgs());
     }

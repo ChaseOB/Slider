@@ -125,11 +125,11 @@ public class MirageSTileManager : Singleton<MirageSTileManager>, ISavable
             EnableMirageTile(d.orignalTileID, d.buttonID, d.x, d.y, false);
             if(d.buttonID == 8)
             {
-                mirageButtons[0].EnableMirageButton(d.orignalTileID);
+                mirageButtons[0].EnableMirageButton(d.orignalTileID, true);
             }
             else
             {
-                mirageButtons[1].EnableMirageButton(d.orignalTileID);
+                mirageButtons[1].EnableMirageButton(d.orignalTileID, true);
             }
         }  
     }
@@ -357,6 +357,16 @@ public class MirageSTileManager : Singleton<MirageSTileManager>, ISavable
     public void IsMirageEnabled(Condition c)
     {
         c.SetSpec(mirageEnabled);
+    }
+
+    public bool MirageTileAtLocation(int id, int x, int y)
+    {
+        foreach(MirageTileData data in enabledMirageTiles)
+        {
+            if (data.orignalTileID == id && data.x == x && data.y == y)
+                return true;
+        } 
+        return false;
     }
 
    

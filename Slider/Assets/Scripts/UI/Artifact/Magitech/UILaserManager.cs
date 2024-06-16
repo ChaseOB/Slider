@@ -35,7 +35,7 @@ public class UILaserManager : MonoBehaviour
 
     public void AddSource(LaserUIData data)
     {
-        print("adding source " + data.islandId);
+        print("adding source " + data.islandId + data.originalIslandId);
         if (sources == null)
             sources = new();
         sources.Add(data);
@@ -45,17 +45,18 @@ public class UILaserManager : MonoBehaviour
     public void RemoveSource(LaserUIData data)
     {
         if (sources == null) return;
-        print("removing source " + data.islandId);
+        print("removing source " + data.islandId + data.originalIslandId);
         sources.Remove(data);
     }
 
-    public void UpdateSpritesFromSource()
+    public void UpdateSpritesFromSource(bool forceEnable = false)
     {
         if (sources == null) return;
         ResetAllSprites();
+        print("sources " + sources.Count);
         foreach (LaserUIData source in sources)
         {
-            source.UpdateSprites();
+            source.UpdateSprites(forceEnable);
         }
     }
 
@@ -122,8 +123,8 @@ public class LaserUIData
     {
         SaveSprites();
         ResetSprites();
-        if(centerObject == LaserCenterObject.SOURCE)
-            uILaserManager.AddSource(this);
+        // if(centerObject == LaserCenterObject.SOURCE)
+        //     uILaserManager.AddSource(this);
     }
 
     private void SaveSprites()
@@ -209,7 +210,7 @@ public class LaserUIData
                 nextDir = mirrorNESW[direction];
                 break;
             case LaserCenterObject.PORTAL:
-                otherPortal.laserUIData.UpdateCenterToEdge(nextDir);
+                otherPortal.GetLaserUIData().UpdateCenterToEdge(nextDir);
                 return;
             default:
                 break;
@@ -275,25 +276,29 @@ public class LaserUIData
         }
     }
 
-    public void UpdateSprites()
+    public void UpdateSprites(bool forceEnable = false)
     {
-        if (laser.isEnabled)
+        if (laser != null && (forceEnable || laser.isEnabled))
         {
             UpdateCenterToEdge(sourceDir);
         }
     }
 
-    public void CopyDataFromMirageSource(LaserUIData original, bool dinoButtLeft)
+    public void CopyDataFromMirageSource(LaserUIData original, bool dinoButtLeft, MagiLaser dinoLaser)
     {
-        islandId = original.islandId;
-        centerObject = original.centerObject;
-        sourceDir = original.sourceDir;
-        if (dinoButtLeft && centerObject == LaserCenterObject.SOURCE)
+        LaserUIData data = (LaserUIData)original.MemberwiseClone();
+
+        islandId = data.islandId;
+        centerObject = data.centerObject;
+        sourceDir = data.sourceDir;
+        laser = dinoLaser;
+        edgeblockers = original.edgeblockers;
+        if (dinoButtLeft && centerObject == LaserCenterObject.SOURCE && laser != null)
         {
             uILaserManager.AddSource(this);
         }
         UpdateImages(original);
-        uILaserManager.UpdateSpritesFromSource();
+        uILaserManager.UpdateSpritesFromSource(true);
     }
 
     private void UpdateImages(LaserUIData original)
@@ -310,8 +315,10 @@ public class LaserUIData
 
     public void ClearDataOnMirageDisable()
     {
+        laser = null;
         centerObject = LaserCenterObject.NONE;
         islandId = originalIslandId;
+        edgeblockers = new bool[4];
         uILaserManager.RemoveSource(this);
         ResetImages();
         uILaserManager.UpdateSpritesFromSource();

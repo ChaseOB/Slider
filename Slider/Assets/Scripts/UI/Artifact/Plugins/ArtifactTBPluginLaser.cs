@@ -23,7 +23,7 @@ public class ArtifactTBPluginLaser : ArtifactTBPlugin
 
     public UILaserManager uILaserManager;
 
-    public LaserUIData laserUIData;
+    private LaserUIData laserUIData;
  
     private bool init;
 
@@ -32,7 +32,6 @@ public class ArtifactTBPluginLaser : ArtifactTBPlugin
         if (init) 
             return;
         init = true;
-
         laserUIData = uILaserManager.AddData(this, button);
     }
 
@@ -43,6 +42,13 @@ public class ArtifactTBPluginLaser : ArtifactTBPlugin
 
         button = GetComponentInParent<ArtifactTileButton>(includeInactive:true);
         Init(button);
+    }
+
+    public LaserUIData GetLaserUIData()
+    {
+        if(laserUIData != null) return laserUIData;
+        InitAndFindButton();
+        return laserUIData;
     }
 
     public override void OnPosChanged()
@@ -74,15 +80,16 @@ public class LaserableRockUIData
 
     public void UpdateLaserUI()
     {
+        LaserUIData data = laserUI.GetLaserUIData();
         if(blockLocation != -1)
-            laserUI.laserUIData.edgeblockers[blockLocation] = false;
+            data.edgeblockers[blockLocation] = false;
         else if(centerObject != LaserCenterObject.NOCHANGE)
-            laserUI.laserUIData.centerObject = centerObject;
-        if(laserUI.laserUIData.t5RockBS)
+            data.centerObject = centerObject;
+        if(data.t5RockBS)
         {
-            laserUI.laserUIData.t5Sprites[0].SetActive(false);
-            laserUI.laserUIData.t5Sprites[0].SetActive(false);
-            laserUI.laserUIData.t5RockBS = false;
+            data.t5Sprites[0].SetActive(false);
+            data.t5Sprites[0].SetActive(false);
+            data.t5RockBS = false;
         }
     }
 

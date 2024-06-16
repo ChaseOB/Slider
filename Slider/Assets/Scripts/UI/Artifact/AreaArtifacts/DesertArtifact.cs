@@ -28,6 +28,7 @@ public class DesertArtifact : UIArtifact
         currGrid = new Dictionary<(int, int), int>();
         storedSwaps = new Queue<List<ATBPair>>();
         latestSwaps = new List<ATBPair>();
+        UpdateMirageGrid();
     }
     protected override void OnDisable()
     {

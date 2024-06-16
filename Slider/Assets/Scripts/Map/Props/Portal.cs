@@ -93,7 +93,7 @@ public class Portal : MonoBehaviour
     {
         desertPortalUI.UIPortalIcon.SetActive(true);
         desertPortalUI.laserPlugin.InitAndFindButton();
-        uILaserManager.AddSource(desertPortalUI.laserPlugin.laserUIData);
+        uILaserManager.AddSource(desertPortalUI.laserPlugin.GetLaserUIData());
         uILaserManager.UpdateSpritesFromSource();
     }
 }
