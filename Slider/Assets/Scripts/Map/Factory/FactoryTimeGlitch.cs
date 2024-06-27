@@ -45,7 +45,7 @@ public class FactoryTimeGlitch : MonoBehaviour
 
     public void DoTimeGlitch()
     {
-        if (SaveSystem.Current.GetBool(TIME_GLITCH_SAVE_STRING))
+        if (SaveSystem.Current.GetBool(TIME_GLITCH_SAVE_STRING)) 
         {
             return;
         }
