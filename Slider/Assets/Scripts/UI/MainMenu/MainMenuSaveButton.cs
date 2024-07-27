@@ -22,6 +22,11 @@ public class MainMenuSaveButton : MonoBehaviour
 
     private static Action onDeleteModeChanged;
 
+    public Image image;
+
+    public Sprite cheatedButton;
+
+
     private const string RAINBOW_BREADGE_ACQUIRED = "MagiTechRainbowBreadgeAcquired";
 
 
@@ -67,6 +72,11 @@ public class MainMenuSaveButton : MonoBehaviour
             timeText.text = string.Format("{0}h{1:D2}", minutes / 60, minutes % 60);
             catSticker.gameObject.SetActive(profile.GetCompletionStatus());
             breadge.SetActive(profile.GetBool(RAINBOW_BREADGE_ACQUIRED));
+
+            if(profile.GetBool("UsedCheats"))
+            {
+                image.sprite = cheatedButton;
+            }
         }
         else
         {
