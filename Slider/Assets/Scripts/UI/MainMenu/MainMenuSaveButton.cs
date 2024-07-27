@@ -24,7 +24,7 @@ public class MainMenuSaveButton : MonoBehaviour
 
     public Image image;
 
-    public Sprite cheatedButton;
+    public Sprite cheatedBG;
 
 
     private const string RAINBOW_BREADGE_ACQUIRED = "MagiTechRainbowBreadgeAcquired";
@@ -75,7 +75,7 @@ public class MainMenuSaveButton : MonoBehaviour
 
             if(profile.GetBool("UsedCheats"))
             {
-                image.sprite = cheatedButton;
+                image.sprite = cheatedBG;
             }
         }
         else
