@@ -21,8 +21,7 @@ public class MountainSoftlockChecker : MonoBehaviour
         SGridAnimator.OnSTileMoveEndLate -= OnSTileMoveEnd;
         Anchor.OnAnchorInteract -= OnAnchorInteract;
     }
-
-
+    
     private void OnAnchorInteract(object sender, Anchor.OnAnchorInteractArgs e)
     {
         anchor = sender as Anchor;
